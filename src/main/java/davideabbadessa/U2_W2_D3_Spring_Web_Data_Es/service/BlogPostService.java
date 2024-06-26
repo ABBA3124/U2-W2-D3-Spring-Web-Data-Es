@@ -1,7 +1,10 @@
 package davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.service;
 
 
+import davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.entities.Autore;
 import davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.entities.BlogPost;
+import davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.exceptions.RequestNotFoundException;
+import davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.payloadRequest.BlogPostPayloadRequest;
 import davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.repositories.BlogPostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +21,9 @@ public class BlogPostService {
     @Autowired
     private BlogPostRepository blogPostRepository;
 
+    @Autowired
+    private AutoreService autoreService;
+
     public Page<BlogPost> findAll(int pageNumber, int pageSize) {
         if (pageSize > 100) pageSize = 100;
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -33,8 +39,24 @@ public class BlogPostService {
         return blogPostRepository.save(blogPost);
     }
 
+
+    public BlogPost save2(BlogPostPayloadRequest blogPostPayloadRequest) {
+        Autore autore = autoreService.findById(blogPostPayloadRequest.getAutoreId()).orElseThrow(()-> new RequestNotFoundException("Id autore inserito non esistente " + blogPostPayloadRequest.getAutoreId()));
+        BlogPost blogPost = new BlogPost();
+        blogPost.setCategoria(blogPostPayloadRequest.getCategoria());
+        blogPost.setTitolo(blogPostPayloadRequest.getTitolo());
+        blogPost.setCover(blogPostPayloadRequest.getCover());
+        blogPost.setContenuto(blogPostPayloadRequest.getContenuto());
+        blogPost.setTempoDiLettura(blogPostPayloadRequest.getTempoDiLettura());
+        blogPost.setAutore(autore);
+        return blogPostRepository.save(blogPost);
+    }
+
     public void deleteById(UUID id) {
         blogPostRepository.deleteById(id);
     }
+
+
+
 }
 
