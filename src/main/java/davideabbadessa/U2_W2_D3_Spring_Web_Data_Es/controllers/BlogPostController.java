@@ -4,10 +4,10 @@ package davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.controllers;
 import davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.entities.BlogPost;
 import davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.service.BlogPostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,8 +20,8 @@ public class BlogPostController {
     private BlogPostService blogPostService;
 
     @GetMapping
-    public List<BlogPost> getAllBlogPosts() {
-        return blogPostService.findAll();
+    public Page<BlogPost> getAllBlogPosts(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        return this.blogPostService.findAll(page, size);
     }
 
     @GetMapping("/{id}")

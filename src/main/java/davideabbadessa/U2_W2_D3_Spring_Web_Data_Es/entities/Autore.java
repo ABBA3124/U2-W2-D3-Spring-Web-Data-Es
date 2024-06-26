@@ -26,5 +26,10 @@ public class Autore {
     private LocalDate dataDiNascita;
     private String avatar;
 
-
+    public Autore(String nome, String cognome, String email, LocalDate dataDiNascita) {
+        this.nome = nome;
+        this.cognome = cognome;
+        this.email = email;
+        this.dataDiNascita = dataDiNascita;
+    }
 }

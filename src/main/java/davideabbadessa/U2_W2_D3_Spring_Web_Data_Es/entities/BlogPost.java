@@ -1,10 +1,7 @@
 package davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.entities;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -24,6 +21,11 @@ public class BlogPost {
     private String cover;
     private String contenuto;
     private int tempoDiLettura;
+
+
+    @ManyToOne
+    @JoinColumn(name = "autore_id", nullable = false)
+    private Autore autore;
 
     public BlogPost(String categoria, String titolo, String cover, String contenuto, int tempoDiLettura) {
         this.categoria = categoria;
