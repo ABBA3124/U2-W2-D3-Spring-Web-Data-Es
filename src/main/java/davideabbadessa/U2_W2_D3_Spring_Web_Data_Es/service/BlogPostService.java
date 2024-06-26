@@ -3,7 +3,7 @@ package davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.service;
 
 import davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.entities.Autore;
 import davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.entities.BlogPost;
-import davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.exceptions.RequestNotFoundException;
+import davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.exceptions.ResourceNotFoundException;
 import davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.payloadRequest.BlogPostPayloadRequest;
 import davideabbadessa.U2_W2_D3_Spring_Web_Data_Es.repositories.BlogPostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class BlogPostService {
 
 
     public BlogPost save2(BlogPostPayloadRequest blogPostPayloadRequest) {
-        Autore autore = autoreService.findById(blogPostPayloadRequest.getAutoreId()).orElseThrow(()-> new RequestNotFoundException("Id autore inserito non esistente " + blogPostPayloadRequest.getAutoreId()));
+        Autore autore = autoreService.findById(blogPostPayloadRequest.getAutoreId()).orElseThrow(()-> new ResourceNotFoundException("Id autore inserito non esistente " + blogPostPayloadRequest.getAutoreId()));
         BlogPost blogPost = new BlogPost();
         blogPost.setCategoria(blogPostPayloadRequest.getCategoria());
         blogPost.setTitolo(blogPostPayloadRequest.getTitolo());
@@ -51,6 +51,26 @@ public class BlogPostService {
         blogPost.setAutore(autore);
         return blogPostRepository.save(blogPost);
     }
+
+
+
+    public BlogPost updateBlogPost(UUID id, BlogPostPayloadRequest blogPostPayloadRequest) {
+        BlogPost existingBlogPost = blogPostRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("BlogPost nessun  ID trovato con: " + id));
+
+        Autore autore = autoreService.findById(blogPostPayloadRequest.getAutoreId())
+                .orElseThrow(() -> new ResourceNotFoundException("Id autore inserito non esistente " + blogPostPayloadRequest.getAutoreId()));
+
+        existingBlogPost.setCategoria(blogPostPayloadRequest.getCategoria());
+        existingBlogPost.setTitolo(blogPostPayloadRequest.getTitolo());
+        existingBlogPost.setCover(blogPostPayloadRequest.getCover());
+        existingBlogPost.setContenuto(blogPostPayloadRequest.getContenuto());
+        existingBlogPost.setTempoDiLettura(blogPostPayloadRequest.getTempoDiLettura());
+        existingBlogPost.setAutore(autore);
+
+        return blogPostRepository.save(existingBlogPost);
+    }
+
 
     public void deleteById(UUID id) {
         blogPostRepository.deleteById(id);
