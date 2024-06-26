@@ -42,26 +42,27 @@ public class BlogPostController {
         return blogPostService.save2(blogPostPayloadRequest);
     }
 
-//    @PostMapping
-//    public BlogPost createBlogPost(@RequestBody BlogPostPayloadRequest blogPostPayloadRequest){
-//        Autore autore = autoreService.findById(blogPostPayloadRequest.getAutoreId()).orElseThrow(()-> new RequestNotFoundException("Id autore inserito non esistente " + blogPostPayloadRequest.getAutoreId()));
-//        BlogPost blogPost = new BlogPost();
-//        blogPost.setCategoria(blogPostPayloadRequest.getCategoria());
-//        blogPost.setTitolo(blogPostPayloadRequest.getTitolo());
-//        blogPost.setCover(blogPostPayloadRequest.getCover());
-//        blogPost.setContenuto(blogPostPayloadRequest.getContenuto());
-//        blogPost.setTempoDiLettura(blogPostPayloadRequest.getTempoDiLettura());
-//        blogPost.setAutore(autore);
-//        return blogPostService.save(blogPost);
-//    }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BlogPost> updateBlogPost(@PathVariable UUID id, @RequestBody BlogPost blogPost) {
-        if (!blogPostService.findById(id).isPresent()) {
+    public ResponseEntity<BlogPost> updateBlogPost(@PathVariable UUID id, @RequestBody BlogPostPayloadRequest blogPostPayloadRequest) {
+        Optional<BlogPost> existingBlogPostOptional = blogPostService.findById(id);
+        if (!existingBlogPostOptional.isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        blogPost.setId(id);
-        return ResponseEntity.ok(blogPostService.save(blogPost));
+
+        BlogPost existingBlogPost = existingBlogPostOptional.get();
+        Autore autore = autoreService.findById(blogPostPayloadRequest.getAutoreId())
+                .orElseThrow(() -> new RequestNotFoundException("Id autore inserito non esistente " + blogPostPayloadRequest.getAutoreId()));
+
+        existingBlogPost.setCategoria(blogPostPayloadRequest.getCategoria());
+        existingBlogPost.setTitolo(blogPostPayloadRequest.getTitolo());
+        existingBlogPost.setCover(blogPostPayloadRequest.getCover());
+        existingBlogPost.setContenuto(blogPostPayloadRequest.getContenuto());
+        existingBlogPost.setTempoDiLettura(blogPostPayloadRequest.getTempoDiLettura());
+        existingBlogPost.setAutore(autore);
+
+        BlogPost updatedBlogPost = blogPostService.save(existingBlogPost);
+        return ResponseEntity.ok(updatedBlogPost);
     }
 
     @DeleteMapping("/{id}")
